@@ -1,19 +1,19 @@
 mod algorithms;
 
-use algorithms::bubble_sort;
+use algorithms::{bubble_sort, heap_sort};
 use std::env::{args, Args};
 
 // ! Change this with each new added algorithm
 enum ImplementedAlgos {
     BubbleSort,
+    HeapSort,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = args();
     let (algoname, values) = get_important_args(&mut args);
     let sort = map_algoname(&algoname)?.get_algorithm::<usize>();
-    let sorted_list = sort(&values);
-    println!("{algoname}: {sorted_list:?}");
+    let _ = sort(&values);
     Ok(())
 }
 
@@ -37,6 +37,7 @@ fn map_algoname(algoname: &str) -> Result<ImplementedAlgos, &'static str> {
     let algoname = algoname.to_lowercase();
     match algoname.as_str() {
         "bubble-sort" | "bubble" => Ok(ImplementedAlgos::BubbleSort),
+        "heap-sort" | "heap" => Ok(ImplementedAlgos::HeapSort),
         _ => Err("Unimplemented algorithm chosen"),
     }
 }
@@ -46,6 +47,7 @@ impl ImplementedAlgos {
     fn get_algorithm<T: Ord + Clone + 'static>(self) -> SortingAlgo<T> {
         Box::new(match self {
             Self::BubbleSort => bubble_sort,
+            Self::HeapSort => heap_sort,
         })
     }
 }
