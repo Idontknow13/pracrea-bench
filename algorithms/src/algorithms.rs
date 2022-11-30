@@ -62,7 +62,19 @@ pub fn merge_sort<T: Ord + Clone>(values: &[T]) -> Vec<T> {
 }
 
 pub fn quick_sort<T: Ord + Clone>(values: &[T]) -> Vec<T> {
-    todo!()
+    let mut values = values.to_vec();
+    inplace_qsort(&mut values);
+    values
+}
+
+fn inplace_qsort<T: Ord + Clone>(values: &mut [T]) {
+    if values.len() < 2 {
+        return;
+    }
+
+    let pivot_idx = divnconq::quick_partition(values);
+    inplace_qsort(&mut values[..pivot_idx]);
+    inplace_qsort(&mut values[pivot_idx + 1..]);
 }
 
 pub fn heap_sort<T: Ord + Clone>(values: &[T]) -> Vec<T> {
