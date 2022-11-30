@@ -1,6 +1,6 @@
 mod algorithms;
 
-use algorithms::{bubble_sort, heap_sort, insertion_sort, selection_sort};
+use algorithms::{bubble_sort, heap_sort, insertion_sort, merge_sort, selection_sort};
 use std::env::{args, Args};
 
 // ! Change this with each new added algorithm
@@ -8,6 +8,7 @@ enum ImplementedAlgos {
     BubbleSort,
     SelectionSort,
     InsertionSort,
+    MergeSort,
     HeapSort,
 }
 
@@ -40,6 +41,7 @@ fn map_algoname(algoname: &str) -> Result<ImplementedAlgos, &'static str> {
         "bubble-sort" | "bubble" => Ok(ImplementedAlgos::BubbleSort),
         "selection-sort" | "selection" => Ok(ImplementedAlgos::SelectionSort),
         "insertion-sort" | "insertion" => Ok(ImplementedAlgos::InsertionSort),
+        "merge-sort" | "merge" => Ok(ImplementedAlgos::MergeSort),
         "heap-sort" | "heap" => Ok(ImplementedAlgos::HeapSort),
         _ => Err("Unimplemented algorithm chosen"),
     }
@@ -52,6 +54,7 @@ impl ImplementedAlgos {
             Self::BubbleSort => bubble_sort,
             Self::SelectionSort => selection_sort,
             Self::InsertionSort => insertion_sort,
+            Self::MergeSort => merge_sort,
             Self::HeapSort => heap_sort,
         })
     }

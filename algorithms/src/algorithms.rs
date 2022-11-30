@@ -1,5 +1,5 @@
+mod divnconq;
 mod heap;
-use heap::*;
 
 //* QUADRATIC ALGORITHMS *//
 
@@ -50,13 +50,28 @@ pub fn insertion_sort<T: Ord + Clone>(values: &[T]) -> Vec<T> {
 
 //* LINEAR-LOG ALGORITHMS *//
 
+pub fn merge_sort<T: Ord + Clone>(values: &[T]) -> Vec<T> {
+    if values.len() < 2 {
+        return values.to_vec();
+    }
+
+    let middle = values.len() / 2;
+    let left = merge_sort(&values[..middle]);
+    let right = merge_sort(&values[middle..]);
+    divnconq::merge(left, right)
+}
+
+pub fn quick_sort<T: Ord + Clone>(values: &[T]) -> Vec<T> {
+    todo!()
+}
+
 pub fn heap_sort<T: Ord + Clone>(values: &[T]) -> Vec<T> {
-    let mut heap = to_max_heap(&values);
+    let mut heap = heap::to_max_heap(&values);
     let heapsize = heap.len();
     for sorted in 0..heapsize {
         // `heapsize - 1 - i` refers to last unsorted element
         heap.swap(0, heapsize - 1 - sorted);
-        max_heapify(&mut heap[..heapsize - 1 - sorted], 0);
+        heap::max_heapify(&mut heap[..heapsize - 1 - sorted], 0);
     }
     heap
 }
@@ -91,6 +106,22 @@ mod tests {
     fn test_insertion_sort() {
         let mut values: Vec<_> = generate_vec(5);
         let sorted_with_algorithm = insertion_sort(&values);
+        values.sort();
+        assert_eq!(values, sorted_with_algorithm)
+    }
+
+    #[test]
+    fn test_merge_sort() {
+        let mut values: Vec<_> = generate_vec(5);
+        let sorted_with_algorithm = merge_sort(&values);
+        values.sort();
+        assert_eq!(values, sorted_with_algorithm)
+    }
+
+    #[test]
+    fn test_quick_sort() {
+        let mut values: Vec<_> = generate_vec(5);
+        let sorted_with_algorithm = quick_sort(&values);
         values.sort();
         assert_eq!(values, sorted_with_algorithm)
     }
