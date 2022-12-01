@@ -78,7 +78,7 @@ fn inplace_qsort<T: Ord + Clone>(values: &mut [T]) {
 }
 
 pub fn heap_sort<T: Ord + Clone>(values: &[T]) -> Vec<T> {
-    let mut heap = heap::to_max_heap(&values);
+    let mut heap = heap::to_max_heap(values);
     let heapsize = heap.len();
     for sorted in 0..heapsize {
         // `heapsize - 1 - i` refers to last unsorted element

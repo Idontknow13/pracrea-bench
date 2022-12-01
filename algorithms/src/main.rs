@@ -5,12 +5,12 @@ use std::env::{args, Args};
 
 // ! Change this with each new added algorithm
 enum ImplementedAlgos {
-    BubbleSort,
-    SelectionSort,
-    InsertionSort,
-    MergeSort,
-    QuickSort,
-    HeapSort,
+    Bubble,
+    Selection,
+    Insertion,
+    Merge,
+    Quick,
+    Heap,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -39,12 +39,12 @@ fn get_important_args(mut args: Args) -> (String, Vec<usize>) {
 fn map_algoname(algoname: &str) -> Result<ImplementedAlgos, &'static str> {
     let algoname = algoname.to_lowercase();
     match algoname.as_str() {
-        "bubble-sort" | "bubble" => Ok(ImplementedAlgos::BubbleSort),
-        "selection-sort" | "selection" => Ok(ImplementedAlgos::SelectionSort),
-        "insertion-sort" | "insertion" => Ok(ImplementedAlgos::InsertionSort),
-        "merge-sort" | "merge" => Ok(ImplementedAlgos::MergeSort),
-        "quick-sort" | "quick" => Ok(ImplementedAlgos::QuickSort),
-        "heap-sort" | "heap" => Ok(ImplementedAlgos::HeapSort),
+        "bubble-sort" | "bubble" => Ok(ImplementedAlgos::Bubble),
+        "selection-sort" | "selection" => Ok(ImplementedAlgos::Selection),
+        "insertion-sort" | "insertion" => Ok(ImplementedAlgos::Insertion),
+        "merge-sort" | "merge" => Ok(ImplementedAlgos::Merge),
+        "quick-sort" | "quick" => Ok(ImplementedAlgos::Quick),
+        "heap-sort" | "heap" => Ok(ImplementedAlgos::Heap),
         _ => Err("Unimplemented algorithm chosen"),
     }
 }
@@ -53,12 +53,12 @@ type SortingAlgo<T> = Box<dyn Fn(&[T]) -> Vec<T>>;
 impl ImplementedAlgos {
     fn get_algorithm<T: Ord + Clone + 'static>(self) -> SortingAlgo<T> {
         Box::new(match self {
-            Self::BubbleSort => bubble_sort,
-            Self::SelectionSort => selection_sort,
-            Self::InsertionSort => insertion_sort,
-            Self::MergeSort => merge_sort,
-            Self::QuickSort => quick_sort,
-            Self::HeapSort => heap_sort,
+            Self::Bubble => bubble_sort,
+            Self::Selection => selection_sort,
+            Self::Insertion => insertion_sort,
+            Self::Merge => merge_sort,
+            Self::Quick => quick_sort,
+            Self::Heap => heap_sort,
         })
     }
 }
