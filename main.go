@@ -14,9 +14,9 @@ import (
 
 func main() {
 	benchedAlgorithms := []string{
-		"merge-sort",
-		"heap-sort",
-		"quick-sort",
+		"bubble-sort",
+		"selection-sort",
+		"insertion-sort",
 	}
 	var benchdata []BenchData
 
@@ -26,36 +26,30 @@ func main() {
 	}
 	filescanner := bufio.NewScanner(file)
 	filescanner.Split(bufio.ScanLines)
-
 	for filescanner.Scan() {
-		values := strings.Split(filescanner.Text(), ",")
-
-		data := make(chan BenchData, len(benchedAlgorithms))
-		defer close(data)
-
-		// TODO: Refactor this to a single loop
-		for _, algo := range benchedAlgorithms {
-			bench := NewBencher(algo, values)
-			go bench.Bench(data)
-		}
-
-		for read := 0; read < len(benchedAlgorithms); read++ {
-			d := <-data
-			benchdata = append(benchdata, d)
-		}
+		DistributeBench(&benchdata, benchedAlgorithms, filescanner.Text())
 	}
 
-	filename := fmt.Sprintf("./results/%s.csv", time.Now().Format("2006-01-02_15:04:05"))
-	csvfile, err := os.Create(filename)
-	if err != nil {
-		log.Fatal("creating .csv file failed")
+	if err := WriteToCsv(benchdata); err != nil {
+		log.Fatal("write to csv failed")
+	}
+}
+
+func DistributeBench(data *[]BenchData, algolist []string, valuestr string) {
+	values := strings.Split(valuestr, ",")
+
+	dataqueue := make(chan BenchData, len(algolist))
+	defer close(dataqueue)
+
+	for _, algo := range algolist {
+		bench := NewBencher(algo, values)
+		go bench.Bench(dataqueue)
 	}
 
-	w := csv.NewWriter(csvfile)
-	defer w.Flush()
-
-	csvdata := BenchToCsv(benchdata)
-	w.WriteAll(csvdata)
+	for received := 0; received < len(algolist); received++ {
+		datum := <-dataqueue
+		*data = append(*data, datum)
+	}
 }
 
 type BenchData struct {
@@ -64,7 +58,20 @@ type BenchData struct {
 	elapsed  float64
 }
 
-func BenchToCsv(data []BenchData) [][]string {
+func WriteToCsv(data []BenchData) error {
+	filename := fmt.Sprintf("./results/%s.csv", time.Now().Format("2006-01-02_15:04:05"))
+	csvfile, err := os.Create(filename)
+
+	w := csv.NewWriter(csvfile)
+	defer w.Flush()
+
+	csvdata := benchToCsv(data)
+	w.WriteAll(csvdata)
+
+	return err
+}
+
+func benchToCsv(data []BenchData) [][]string {
 	csvdata := [][]string{
 		{"algorithm", "n", "exectime (ms)"},
 	}
